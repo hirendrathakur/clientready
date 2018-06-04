@@ -1,0 +1,19 @@
+*.class
+*.log
+
+# build and ide specific
+*.iml
+.cache
+.history
+*.ipr
+*.iws
+*.log
+.lib/
+.idea/
+.DS_Store
+dist/*
+target/
+out/
+*/dependency-reduced-pom.xml
+resources/*.retry
+resources/playbooks/*.retry
