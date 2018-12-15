@@ -2,15 +2,17 @@ import clients.impl.HttpClient;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Timer;
 import configs.HttpConfig;
-import exceptions.ClientExecutionException;
 import factory.ClientFactory;
 import lombok.extern.slf4j.Slf4j;
+import models.CosmosResponse;
 import org.apache.commons.cli.*;
 import utils.JSONObjectMapper;
 import utils.MetricsRegistry;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -61,7 +63,7 @@ public class Boot {
     private static class HttpClientThread implements Runnable {
 
         private HttpConfig httpConfig;
-        private static final String path = "/hello-world";
+        private static final String path = "/productService/getCustomProductDetails";
 
         HttpClientThread(HttpConfig httpConfig) {
             this.httpConfig = httpConfig;
@@ -70,13 +72,40 @@ public class Boot {
         @Override
         public void run() {
             HttpClient httpClient = (HttpClient) ClientFactory.getClient(httpConfig);
+            String payload = "{\n" +
+                    "    \"channelContext\": {\n" +
+                    "        \"fkApp\": {\n" +
+                    "            \"type\": \"Retail\"\n" +
+                    "        }\n" +
+                    "    },\n" +
+                    "    \"ids\": [\n" +
+                    "        \"ACCEZT6VN9GZNAVK\"\n" +
+                    "    ],\n" +
+                    "    \"locationContext\": {},\n" +
+                    "    \"serviceContext\": {\n" +
+                    "        \"npsServices\": [\n" +
+                    "            \"PNP_LITE\",\n" +
+                    "            \"ATHENA\"\n" +
+                    "        ],\n" +
+                    "        \"npsViews\": [\n" +
+                    "            \"LISTING_INFO\"\n" +
+                    "        ],\n" +
+                    "        \"orderListings\": true,\n" +
+                    "        \"preferredListingIds\": {\n" +
+                    "            \"ACCEZT6VN9GZNAVK\": \"LSTACCEZT6VN9GZNAVK7PNXWH\"\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "}";
+
+
             while (true) {
-                try (Timer.Context context = MetricsRegistry.timerContext(this.getClass(), "get")){
-                    Object response = httpClient.doGet(Object.class, path, headerMap);
+                try (Timer.Context context = MetricsRegistry.timerContext(this.getClass(), "post")) {
+                    httpClient.doPost(path, new HashMap<>(), JSONObjectMapper.INSTANCE.getMapper().readValue(payload, Map.class));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+
         }
     }
 

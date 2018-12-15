@@ -1,4 +1,7 @@
 package configs;
 
-public class ConnectionConfig {
+import enums.ClientTypes;
+
+public interface ConnectionConfig {
+    ClientTypes getClientType();
 }

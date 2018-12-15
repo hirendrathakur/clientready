@@ -1,0 +1,7 @@
+host: 10.47.6.93
+port: 80
+maxTotal: 320
+maxPerHost: 320
+socketTimeout: 2000
+connectionTimeout: 2000
+connectionRequestTimeout: 2000
